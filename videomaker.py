@@ -5,6 +5,7 @@ import argparse
 import os
 from mutagen.mp3 import MP3
 from datetime import datetime
+import moviepy.editor as mpe
 
 def get_args():
     # Construct the argument parser and parse the arguments
@@ -30,8 +31,6 @@ def get_files(folder, ext):
     return files
 
 def create_video(image, music, output, fps=1):
-    print("Fazendo video com %s e %s para salver em %s" % (image, music, output))
-
     img = cv2.imread(image)
     height, width, layers = img.shape
     size = (width,height)
@@ -43,6 +42,13 @@ def create_video(image, music, output, fps=1):
     for i in range(int(float(audio_length))):
         out.write(img)
     out.release()
+
+    video = mpe.VideoFileClip(output)
+    audio_background = mpe.AudioFileClip(music)
+    #final_audio = mpe.CompositeAudioClip([video.audio, audio_background])
+    final_clip = video.set_audio(audio_background)
+    final_clip.write_videofile(output)
+    
 
 def get_music_length(music):
     mp3_file = MP3(music)
