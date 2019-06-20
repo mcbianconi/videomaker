@@ -31,23 +31,32 @@ def get_files(folder, ext):
     return files
 
 def create_video(image, music, output, fps=1):
+    print("Image: %s + Audio: %s > %s" % (image, music, output))
     img = cv2.imread(image)
     height, width, layers = img.shape
     size = (width,height)
 
+    audio_length = get_music_length(music)
+ 
     out = cv2.VideoWriter(output,get_codec(), fps, size)
 
-    audio_length = get_music_length(music)
+    iterations = int(audio_length * fps)
+
+    if iterations < audio_length:
+        iterations = int(audio_length)
     
-    for i in range(int(float(audio_length))):
+    for i in range(iterations):
         out.write(img)
     out.release()
 
-    video = mpe.VideoFileClip(output)
-    audio_background = mpe.AudioFileClip(music)
-    #final_audio = mpe.CompositeAudioClip([video.audio, audio_background])
-    final_clip = video.set_audio(audio_background)
-    final_clip.write_videofile(output)
+    try:
+        video = mpe.VideoFileClip(output)
+        audio_background = mpe.AudioFileClip(music)
+        final_clip = video.set_audio(audio_background)
+        final_clip.write_videofile(output, threads=4)
+    except OSError as error:
+        print("Could not create the video, check the image file dimensions")
+        print(error)
     
 
 def get_music_length(music):
