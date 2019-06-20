@@ -63,7 +63,7 @@ def create_video(image, music, output, fps=1):
 
 def add_audio(video_file, audio_file):
     # add audio to the original video, trim either the audio or video depends on which one is longer
-    subprocess.call(['ffmpeg', '-i', video_file, '-i', audio_file, '-shortest', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '256k', '-y', video_file+"_with_audio.mp4"]) 
+    subprocess.call(['ffmpeg', '-i', video_file, '-i', audio_file, '-shortest', '-c:v', 'copy', '-c:a', 'mp3','-b:a', '256k', '-y', video_file+"_with_audio.mp4"]) 
 
 # get the music duration in seconds
 def get_music_length(music):
