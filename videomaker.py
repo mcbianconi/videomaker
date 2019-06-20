@@ -40,10 +40,7 @@ def create_video(image, music, output, fps=1):
  
     out = cv2.VideoWriter(output,get_codec(), fps, size)
 
-    iterations = int(audio_length * fps)
-
-    if iterations < audio_length:
-        iterations = int(audio_length)
+    iterations = int(audio_length)
     
     for i in range(iterations):
         out.write(img)
@@ -51,9 +48,7 @@ def create_video(image, music, output, fps=1):
 
     try:
         video = mpe.VideoFileClip(output)
-        audio_background = mpe.AudioFileClip(music)
-        final_clip = video.set_audio(audio_background)
-        final_clip.write_videofile(output, threads=4)
+        video.write_videofile(output, audio=music)
     except OSError as error:
         print("Could not create the video, check the image file dimensions")
         print(error)
