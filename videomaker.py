@@ -4,7 +4,7 @@ import cv2
 import argparse
 import os
 from mutagen.mp3 import MP3
-import ffmpeg
+from datetime import datetime
 
 def get_args():
     # Construct the argument parser and parse the arguments
@@ -38,28 +38,18 @@ def create_video(image, music, output, fps=1):
 
     out = cv2.VideoWriter(output,get_codec(), fps, size)
 
-    music_data = ffmpeg.probe(music)
-    audio_length = music_data['format']['duration']
+    audio_length = get_music_length(music)
     
     for i in range(int(float(audio_length))):
         out.write(img)
     out.release()
 
-    video_stream = ffmpeg.input(output)
-    music_stream = ffmpeg.input(music)
-
-    
-    joined = ffmpeg.concat(video_stream, music_stream, v=1, a=1).node
-
-    nout = ffmpeg.output(joined[0], joined[1], 'out.mp4')
-    print(nout)
-    nout.run()
-
+def get_music_length(music):
+    mp3_file = MP3(music)
+    return mp3_file.info.length
 
 def get_video_name(image, music):
-    
-    video_name = os.path.basename(image).strip().split()[-1] + os.path.basename(music).strip().split()[-1] + '.mp4'
-    return video_name
+    return str(datetime.today().timestamp()) + ".mp4"
 
 def main():
     args = get_args()
